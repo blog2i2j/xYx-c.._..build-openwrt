@@ -59,7 +59,7 @@ lxc.net.1.name: eth1
 ``` shell
 cat >> /etc/systemd/system/dhcpv6.service << EOF
 [Unit]
-Description=OpenWrt DHCPv6 Server
+Description=PVE DHCPv6 Client
 After=network.target
 [Service]
 ExecStart=/usr/sbin/dhclient -6 vmbr0
@@ -71,7 +71,7 @@ EOF
 ``` shell
 cat >> /etc/systemd/system/dhcpv6.timer << EOF
 [Unit]
-Description=OpenWrt DHCPv6 Server
+Description=PVE DHCPv6 Client
 After=network.target
 [Timer]
 OnBootSec=3min
