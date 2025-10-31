@@ -53,38 +53,24 @@ lxc.net.1.name: eth1
 
 ```
 
-### 从lxc openwrt中dhcpv6服务获取ipv6
-> pve启动后负责拨号的openwrt还未启动无法获取ipv6地址,添加定时任务系统启动3分钟后获取ipv6,每12小时重新尝试获取
-- #### 创建dhcpv6.service
+### 从lxc openwrt中服务获取ipv6地址
+> pve启动后负责拨号的openwrt还未启动无法获取ipv6地址，设置网络服务自动获取地址
+- #### 创建vmbr0.network
 ``` shell
-cat >> /etc/systemd/system/dhcpv6.service << EOF
-[Unit]
-Description=PVE DHCPv6 Client
-After=network.target
-[Service]
-ExecStart=/usr/sbin/dhclient -6 vmbr0
-[Install]
-WantedBy=multi-user.target
+cat >> /etc/systemd/network/10-vmbr0.network << EOF
+[Match]
+Name=vmbr0
+
+[Network]
+DHCP=yes
+IPv6AcceptRA=yes
 EOF
 ```
-- #### 创建dhcpv6.timer
-``` shell
-cat >> /etc/systemd/system/dhcpv6.timer << EOF
-[Unit]
-Description=PVE DHCPv6 Client
-After=network.target
-[Timer]
-OnBootSec=3min
-OnUnitActiveSec=12h
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-- #### 运行定时任务
+- #### 运行任务
 ``` shell
 systemctl daemon-reload
-systemctl enable dhcpv6.timer
-systemctl start dhcpv6.timer
+systemctl enable systemd-networkd
+systemctl restart systemd-networkd
 ```
 
 ### Lxc AdgHome配置
